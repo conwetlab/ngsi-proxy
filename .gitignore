@@ -1,0 +1,5 @@
+node_modules
+build
+.grunt
+*.DS_Store
+*.swp
