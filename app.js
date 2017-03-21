@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /*
  *     Copyright (c) 2013-2017 CoNWeT Lab - Universidad Politécnica de Madrid
  *
