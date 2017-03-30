@@ -94,7 +94,7 @@ var build_absolute_url = function build_absolute_url(req, url) {
     return URL.resolve(protocol + "://" + domain + req.url, url);
 };
 
-exports.options_eventsource = function create_eventsource(req, res) {
+exports.options_eventsource = function options_eventsource(req, res) {
     res.header('Connection', 'keep-alive');
     var origin = req.header('Origin');
     if (origin != null) {
