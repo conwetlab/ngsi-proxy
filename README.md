@@ -1,7 +1,5 @@
 # ngsi-proxy
 
-## Normal usage
-
 You can install the latest stable version of the `ngsi-proxy` by issuing the
 followign command:
 

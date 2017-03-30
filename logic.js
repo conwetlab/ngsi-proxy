@@ -149,17 +149,15 @@ exports.list_eventsources = function list_eventsources(req, res) {
 exports.create_eventsource = function create_eventsource(req, res) {
 
     var origin = req.header('Origin');
-    if (origin == null) {
-        res.send(412);
-    }
-
     connection = createConnection(origin);
 
     url = build_absolute_url(req, '/eventsource/' + connection.id);
 
     res.header('Cache-Control', 'no-cache');
     res.header('Connection', 'keep-alive');
-    res.header('Access-Control-Allow-Origin', origin);
+    if (origin != null) {
+        res.header('Access-Control-Allow-Origin', origin);
+    }
     res.location(url);
     res.send(201, JSON.stringify({
         connection_id: connection.id,
@@ -171,10 +169,9 @@ exports.eventsource = function eventsource(req, res) {
     var origin, connection = connections[req.params.id];
 
     origin = req.header('Origin');
-    if (origin == null) {
-        res.send(412);
+    if (origin != null) {
+        res.header('Access-Control-Allow-Origin', origin);
     }
-    res.header('Access-Control-Allow-Origin', origin);
     if (connection == null) {
         return res.send(404);
     }
