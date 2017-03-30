@@ -59,8 +59,8 @@ app.configure('development', function(){
     app.use(express.errorHandler());
 });
 
-app.options('/eventsource', logic.options_eventsource);
 app.get('/eventsources', logic.list_eventsources);
+app.options('/eventsource', logic.options_eventsource);
 app.post('/eventsource', logic.create_eventsource);
 app.get('/eventsource/:id', logic.eventsource);
 app.delete('/eventsource/:id', logic.delete_eventsource);

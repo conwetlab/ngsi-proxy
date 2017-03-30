@@ -40,12 +40,11 @@ const uuid = require('uuid/v1');
 var connections = {};
 var callbacks = {};
 
-var createConnection = function createConnection(origin) {
+var createConnection = function createConnection() {
     var id = uuid();
     var connection = {
         id: id,
         client_ip: null,
-        origin: origin,
         reconnection_count: 0,
         response: null,
         callbacks: {}
@@ -176,9 +175,6 @@ exports.eventsource = function eventsource(req, res) {
         return res.send(404);
     }
 
-    if (origin !== connection.origin) {
-        return res.send(403);
-    }
     res.header('Cache-Control', 'no-cache');
     res.header('Connection', 'keep-alive');
     req.socket.setTimeout(0);
@@ -220,9 +216,6 @@ exports.delete_eventsource = function delete_eventsource(req, res) {
     }
     if (connection == null) {
         return res.send(404);
-    }
-    if (origin !== connection.origin) {
-        return res.send(403);
     }
 
     console.log('Deleting subscription ' + req.params.id);
