@@ -19,8 +19,13 @@ followign command:
 $ npm install -g ngsi-proxy
 ```
 
-Once installed, you will be able to run the `ngsi-proxy` server by using
-the `ngsi-proxy` command. By default, it will be listening on port 3000.
+Once installed, you will be able to run the `ngsi-proxy` server by directly
+using the `ngsi-proxy` command. By default, it will be listening on port 3000,
+but you can change it by setting the `PORT` environment variable:
+
+```
+$ PORT=10000 ngsi-proxy
+```
 
 You can use a process manager (e.g. [pm2](http://pm2.keymetrics.io/)) for
 running `ngsi-proxy` in a production environment:
@@ -31,6 +36,8 @@ $ pm2 startup
 $ pm2 start ngsi-proxy
 $ pm2 save
 ```
+
+Take a look into the [pm2's documentation](http://pm2.keymetrics.io/docs/usage/pm2-doc-single-page/) for a full list of options.
 
 ## Running from source code
 
