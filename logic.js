@@ -156,6 +156,8 @@ exports.create_eventsource = function create_eventsource(req, res) {
     res.header('Connection', 'keep-alive');
     if (origin != null) {
         res.header('Access-Control-Allow-Origin', origin);
+        res.header('Access-Control-Allow-Headers', 'X-Requested-With');
+        res.header('Access-Control-Expose-Headers', 'Location');
     }
     res.location(url);
     res.send(201, JSON.stringify({
@@ -213,6 +215,7 @@ exports.delete_eventsource = function delete_eventsource(req, res) {
     origin = req.header('Origin');
     if (origin != null) {
         res.header('Access-Control-Allow-Origin', origin);
+        res.header('Access-Control-Allow-Headers', 'X-Requested-With');
     }
     if (connection == null) {
         return res.send(404);
@@ -246,6 +249,8 @@ exports.options_callbacks = function options_callbacks(req, res) {
     if (origin != null) {
         res.header('Access-Control-Allow-Origin', origin);
         res.header('Access-Control-Allow-Methods', 'OPTIONS, POST');
+        res.header('Access-Control-Allow-Headers', 'Content-Type, X-Requested-With');
+        res.header('Access-Control-Expose-Headers', 'Location');
     }
     res.send(204);
 };
@@ -258,6 +263,8 @@ exports.create_callback = function create_callback(req, res) {
     origin = req.header('Origin');
     if (origin != null) {
         res.header('Access-Control-Allow-Origin', origin);
+        res.header('Access-Control-Allow-Headers', 'Content-Type, X-Requested-With');
+        res.header('Access-Control-Expose-Headers', 'Location');
     }
 
     buf = '';
@@ -334,12 +341,19 @@ exports.options_callback_entry = function options_callback_entry(req, res) {
     if (origin != null) {
         res.header('Access-Control-Allow-Origin', origin);
         res.header('Access-Control-Allow-Methods', 'DELETE, OPTIONS, POST');
+        res.header('Access-Control-Allow-Headers', 'X-Requested-With');
     }
     res.send(204);
 };
 
 exports.delete_callback = function delete_callback(req, res) {
     console.log('Deleting callback ' + req.params.id);
+
+    var origin = req.header('Origin');
+    if (origin != null) {
+        res.header('Access-Control-Allow-Origin', origin);
+        res.header('Access-Control-Allow-Headers', 'X-Requested-With');
+    }
 
     if (!(req.params.id in callbacks)) {
         res.send(404);
