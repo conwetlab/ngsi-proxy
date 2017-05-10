@@ -99,6 +99,19 @@ exports.options_eventsource = function options_eventsource(req, res) {
     if (origin != null) {
         res.header('Access-Control-Allow-Origin', origin);
         res.header('Access-Control-Allow-Methods', 'POST, OPTIONS');
+        res.header('Access-Control-Allow-Headers', 'X-Requested-With');
+        res.header('Access-Control-Expose-Headers', 'Location');
+    }
+    res.send(204);
+};
+
+exports.options_eventsource_entry = function options_eventsource_entry(req, res) {
+    res.header('Connection', 'keep-alive');
+    var origin = req.header('Origin');
+    if (origin != null) {
+        res.header('Access-Control-Allow-Origin', origin);
+        res.header('Access-Control-Allow-Methods', 'GET, DELETE');
+        res.header('Access-Control-Allow-Headers', 'X-Requested-With');
     }
     res.send(204);
 };
