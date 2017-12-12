@@ -13,7 +13,7 @@ This NGSI proxy creates a server that is capable of receiving `POST` notificatio
 
 ## How to use this image
 
-### start a redis instance
+### start a ngsi-proxy instance
 
     $ docker run --name some-ngsiproxy -d fiware/ngsiproxy
 
