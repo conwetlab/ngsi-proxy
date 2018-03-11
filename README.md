@@ -10,6 +10,7 @@ This NGSI proxy creates a server that is capable of receiving `POST`
 notifications and redirect them to web pages through an
 [Event Source](https://developer.mozilla.org/docs/Web/API/EventSource) endpoint.
 
+
 ## Usage
 
 You can install the latest stable version of the `ngsi-proxy` by issuing the
@@ -38,6 +39,12 @@ $ pm2 save
 ```
 
 Take a look into the [pm2's documentation](http://pm2.keymetrics.io/docs/usage/pm2-doc-single-page/) for a full list of options.
+
+
+## Running using docker
+
+ngsi-proxy can also be deployed using a docker container. Take a look into the [docker image documentation](https://hub.docker.com/r/fiware/ngsiproxy/).
+
 
 ## Running from source code
 
