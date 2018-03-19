@@ -87,10 +87,10 @@ var build_absolute_url = function build_absolute_url(req, url) {
     var protocol, domain, path;
 
     protocol = req.protocol;
-    domain = req.header('host');
+    domain = req.hostname;
     path = req.url;
 
-    return URL.resolve(protocol + "://" + domain + req.url, url);
+    return URL.resolve(protocol + "://" + domain + path, url);
 };
 
 exports.options_eventsource = function options_eventsource(req, res) {

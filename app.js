@@ -47,6 +47,19 @@ var express = require('express'),
 
 var app = express();
 
+
+if (process.env.TRUST_X_FORWARDED_PROTO) {
+    app.use(function(req, res, next) {
+        var schema = req.headers["x-forwarded-proto"];
+
+        if (schema === "https") {
+            req.connection.encrypted = true;
+        }
+
+        next();
+    });
+}
+
 app.configure(function() {
     app.set('port', process.env.PORT || 3000);
     app.enable('case sensitive routing');
