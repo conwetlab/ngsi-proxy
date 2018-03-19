@@ -173,7 +173,7 @@ exports.create_eventsource = function create_eventsource(req, res) {
         res.header('Access-Control-Expose-Headers', 'Location');
     }
     res.location(url);
-    res.send(201, JSON.stringify({
+    res.status(201).send(JSON.stringify({
         connection_id: connection.id,
         url: url
     }));

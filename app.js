@@ -40,37 +40,30 @@
  * Module dependencies.
  */
 
-var express = require('express'),
+var compression = require('compression'),
+    errorhandler = require('errorhandler'),
+    express = require('express'),
     http = require('http'),
     logic = require('./logic'),
-    path = require('path');
+    path = require('path'),
+    morgan = require('morgan');
 
 var app = express();
 
-
+// Configure Express
+app.set('port', process.env.PORT || 3000);
 if (process.env.TRUST_X_FORWARDED_PROTO) {
-    app.use(function(req, res, next) {
-        var schema = req.headers["x-forwarded-proto"];
-
-        if (schema === "https") {
-            req.connection.encrypted = true;
-        }
-
-        next();
-    });
+    app.set('trust proxy', true);
 }
+app.enable('case sensitive routing');
+app.use(morgan('combined'));
+app.use(compression());
 
-app.configure(function() {
-    app.set('port', process.env.PORT || 3000);
-    app.enable('case sensitive routing');
-    app.use(express.logger('default'));
-    app.use(app.router);
-    app.use(express.compress());
-});
-
-app.configure('development', function(){
-    app.use(express.errorHandler());
-});
+// Support development mode
+var env = process.env.NODE_ENV || 'development';
+if ('development' == env) {
+    app.use(errorhandler());
+}
 
 app.get('/eventsources', logic.list_eventsources);
 app.options('/eventsource', logic.options_eventsource);
