@@ -52,7 +52,7 @@ var app = express();
 
 // Configure Express
 app.set('port', process.env.PORT || 3000);
-if (process.env.TRUST_X_FORWARDED_PROTO) {
+if (process.env.TRUST_PROXY_HEADERS) {
     app.set('trust proxy', true);
 }
 app.enable('case sensitive routing');

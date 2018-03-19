@@ -28,6 +28,14 @@ but you can change it by setting the `PORT` environment variable:
 $ PORT=10000 ngsi-proxy
 ```
 
+`ngsi-proxy` will ignore `X-Forwarded-*` headers by default. If you need to
+deploy `ngsi-proxy` behind a front-end web server, like Apache or Nginx, you can
+enable those headers by setting the `TRUST_PROXY_HEADERS` environment variable:
+
+```
+$ TRUST_PROXY_HEADERS=1 ngsi-proxy
+```
+
 You can use a process manager (e.g. [pm2](http://pm2.keymetrics.io/)) for
 running `ngsi-proxy` in a production environment:
 
