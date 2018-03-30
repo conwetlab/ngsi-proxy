@@ -35,5 +35,9 @@
   },
   "bin": {
     "ngsi-proxy": "app.js"
+  },
+  "devDependencies": {
+    "jasmine": "^3.1.0",
+    "request": "^2.85.0"
   }
 }

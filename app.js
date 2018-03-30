@@ -43,7 +43,6 @@
 var compression = require('compression'),
     errorhandler = require('errorhandler'),
     express = require('express'),
-    http = require('http'),
     logic = require('./logic'),
     path = require('path'),
     morgan = require('morgan');
@@ -77,6 +76,10 @@ app.post('/callbacks/:id', logic.process_callback);
 app.options('/callbacks/:id', logic.options_callback_entry);
 app.delete('/callbacks/:id', logic.delete_callback);
 
-http.createServer(app).listen(app.get('port'), function() {
-    console.log("ngsi-proxy server listening on port " + app.get('port'));
-});
+if (require.main === module) {
+    app.listen(app.get('port'), function() {
+        console.log("ngsi-proxy server listening on port " + app.get('port'));
+    });
+} else {
+    module.exports = app;
+}
