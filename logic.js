@@ -85,13 +85,16 @@ var removeConnection = function removeConnection(id) {
 
 var URL = require('url');
 var build_absolute_url = function build_absolute_url(req, url) {
-    var protocol, domain, path;
+    let protocol = req.protocol;
+    let domain = req.hostname;
+    let path = req.url;
+    let port = (process.env.TRUST_PROXY_HEADERS && req.get('X-Forwarded-Port')) || req.socket.localPort;
 
-    protocol = req.protocol;
-    domain = req.hostname;
-    path = req.url;
-
-    return URL.resolve(protocol + "://" + domain + path, url);
+    if (protocol === "http" && port != 80 || protocol === "https" && port != 443) {
+        return URL.resolve(protocol + "://" + domain + ':' + port + path, url);
+    } else {
+        return URL.resolve(protocol + "://" + domain + path, url);
+    }
 };
 
 exports.options_eventsource = function options_eventsource(req, res) {
