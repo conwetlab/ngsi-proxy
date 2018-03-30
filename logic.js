@@ -1,5 +1,6 @@
 /*
  *     Copyright (c) 2014-2017 CoNWeT Lab., Universidad Politécnica de Madrid
+ *     Copyright (c) 2018 Future Internet Consulting and Development Solutions S.L.
  *
  *     This file is part of ngsi-proxy.
  *
@@ -102,7 +103,7 @@ exports.options_eventsource = function options_eventsource(req, res) {
         res.header('Access-Control-Allow-Headers', 'X-Requested-With');
         res.header('Access-Control-Expose-Headers', 'Location');
     }
-    res.send(204);
+    res.sendStatus(204);
 };
 
 exports.options_eventsource_entry = function options_eventsource_entry(req, res) {
@@ -113,7 +114,7 @@ exports.options_eventsource_entry = function options_eventsource_entry(req, res)
         res.header('Access-Control-Allow-Methods', 'GET, DELETE');
         res.header('Access-Control-Allow-Headers', 'X-Requested-With');
     }
-    res.send(204);
+    res.sendStatus(204);
 };
 
 exports.list_eventsources = function list_eventsources(req, res) {
@@ -187,7 +188,7 @@ exports.eventsource = function eventsource(req, res) {
         res.header('Access-Control-Allow-Origin', origin);
     }
     if (connection == null) {
-        return res.send(404);
+        return res.sendStatus(404);
     }
 
     res.header('Cache-Control', 'no-cache');
@@ -231,7 +232,7 @@ exports.delete_eventsource = function delete_eventsource(req, res) {
         res.header('Access-Control-Allow-Headers', 'X-Requested-With');
     }
     if (connection == null) {
-        return res.send(404);
+        return res.sendStatus(404);
     }
 
     console.log('Deleting subscription ' + req.params.id);
@@ -252,7 +253,7 @@ exports.delete_eventsource = function delete_eventsource(req, res) {
         delete callbacks[callback_id];
     }
 
-    res.send(204);
+    res.sendStatus(204);
 };
 
 exports.options_callbacks = function options_callbacks(req, res) {
@@ -265,7 +266,7 @@ exports.options_callbacks = function options_callbacks(req, res) {
         res.header('Access-Control-Allow-Headers', 'Content-Type, X-Requested-With');
         res.header('Access-Control-Expose-Headers', 'Location');
     }
-    res.send(204);
+    res.sendStatus(204);
 };
 
 exports.create_callback = function create_callback(req, res) {
@@ -289,26 +290,26 @@ exports.create_callback = function create_callback(req, res) {
         buf = buf.trim();
 
         if (buf.length === 0) {
-            res.send(400, 'invalid json: empty request body');
+            res.status(400).send('invalid json: empty request body');
             return;
         }
 
         try {
             data = JSON.parse(buf);
         } catch (e) {
-            res.send(400, 'invalid json: ' + e);
+            res.status(400).send('invalid json: ' + e);
             return;
         }
 
         connection = connections[data.connection_id];
 
         if (connection == null) {
-            res.send(404);
+            res.sendStatus(404);
             return;
         }
         callback_info = createCallback(connection);
         res.header('Content-Type', 'application/json');
-        res.send(200, JSON.stringify({
+        res.status(200).send(JSON.stringify({
             callback_id: callback_info.id,
             url: build_absolute_url(req, '/callbacks/' + callback_info.id)
         }));
@@ -318,7 +319,7 @@ exports.create_callback = function create_callback(req, res) {
 exports.process_callback = function process_callback(req, res) {
 
     if (!(req.params.id in callbacks)) {
-        res.send(404);
+        res.sendStatus(404);
         return;
     }
 
@@ -342,7 +343,7 @@ exports.process_callback = function process_callback(req, res) {
             console.log('Ignoring notification as the client is not connected');
         }
 
-        res.send(204);
+        res.sendStatus(204);
         callbacks[req.params.id].notification_counter++;
     });
 };
@@ -356,7 +357,7 @@ exports.options_callback_entry = function options_callback_entry(req, res) {
         res.header('Access-Control-Allow-Methods', 'DELETE, OPTIONS, POST');
         res.header('Access-Control-Allow-Headers', 'X-Requested-With');
     }
-    res.send(204);
+    res.sendStatus(204);
 };
 
 exports.delete_callback = function delete_callback(req, res) {
@@ -369,10 +370,10 @@ exports.delete_callback = function delete_callback(req, res) {
     }
 
     if (!(req.params.id in callbacks)) {
-        res.send(404);
+        res.sendStatus(404);
         return;
     }
 
     removeCallback(req.params.id);
-    res.send(204);
+    res.sendStatus(204);
 };
