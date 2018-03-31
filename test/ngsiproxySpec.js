@@ -1,5 +1,6 @@
 var request = require("request");
 var app = require('../app');
+var EventSource = require("eventsource");
 
 describe('ngsi-proxy server', () => {
     var server;
@@ -235,8 +236,52 @@ describe('ngsi-proxy server', () => {
         });
     });
 
-    it('404 deleting a inexistent callback', (done) => {
+    it('404 deleting an inexistent callback', (done) => {
         request.delete('http://localhost:4321/callbacks/inexistent', (error, response, body) => {
+            expect(response.statusCode).toBe(404);
+            done();
+        });
+    });
+
+    it('allow posting into a callback', (done) => {
+        const payload = "content";
+
+        request.post('http://localhost:4321/eventsource', (error, response, body) => {
+            expect(error).toBe(null);
+            expect(response.statusCode).toBe(201);
+            let data = JSON.parse(body);
+            let callback_id;
+
+            let es = new EventSource(data.url);
+            es.addEventListener("notification", (event) => {
+                let json = JSON.parse(event.data);
+                expect(json.callback_id).toEqual(callback_id);
+                expect(JSON.parse(json.payload)).toBe(payload);
+                done();
+            });
+
+            request.post({
+                    url: 'http://localhost:4321/callbacks',
+                    json: true,
+                    body: {"connection_id": data.connection_id}
+                }, (error, response, body) => {
+                    expect(response.statusCode).toBe(201);
+                    callback_id = body.callback_id;
+                    request.post({
+                            url: body.url,
+                            json: true,
+                            body: payload
+                        }, (error, response, body) => {
+                            expect(response.statusCode).toBe(204);
+                        }
+                    );
+                }
+            );
+        });
+    });
+
+    it('404 posting into an inexistent callback', (done) => {
+        request.post('http://localhost:4321/callbacks/inexistent', (error, response, body) => {
             expect(response.statusCode).toBe(404);
             done();
         });
