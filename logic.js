@@ -94,7 +94,6 @@ var build_absolute_url = function build_absolute_url(req, url) {
 };
 
 exports.options_eventsource = function options_eventsource(req, res) {
-    res.header('Connection', 'keep-alive');
     var origin = req.header('Origin');
     if (origin != null) {
         res.header('Access-Control-Allow-Origin', origin);
@@ -102,17 +101,20 @@ exports.options_eventsource = function options_eventsource(req, res) {
         res.header('Access-Control-Allow-Headers', 'X-Requested-With');
         res.header('Access-Control-Expose-Headers', 'Location');
     }
+    res.header('Connection', 'keep-alive');
+    res.header('Content-Length', '0');
     res.sendStatus(204);
 };
 
 exports.options_eventsource_entry = function options_eventsource_entry(req, res) {
-    res.header('Connection', 'keep-alive');
     var origin = req.header('Origin');
     if (origin != null) {
         res.header('Access-Control-Allow-Origin', origin);
         res.header('Access-Control-Allow-Methods', 'GET, DELETE');
         res.header('Access-Control-Allow-Headers', 'X-Requested-With');
     }
+    res.header('Connection', 'keep-alive');
+    res.header('Content-Length', '0');
     res.sendStatus(204);
 };
 
@@ -193,6 +195,8 @@ exports.eventsource = function eventsource(req, res) {
 
     res.header('Cache-Control', 'no-cache');
     res.header('Connection', 'keep-alive');
+    // Forbid Nginx buffering
+    res.header('X-Accel-Buffering', 'no');
     req.socket.setTimeout(0);
 
     if (connection.response != null) {
@@ -253,12 +257,11 @@ exports.delete_eventsource = function delete_eventsource(req, res) {
         delete callbacks[callback_id];
     }
 
+    res.header('Content-Length', '0');
     res.sendStatus(204);
 };
 
 exports.options_callbacks = function options_callbacks(req, res) {
-    res.header('Cache-Control', 'no-cache');
-    res.header('Connection', 'keep-alive');
     var origin = req.header('Origin');
     if (origin != null) {
         res.header('Access-Control-Allow-Origin', origin);
@@ -266,6 +269,9 @@ exports.options_callbacks = function options_callbacks(req, res) {
         res.header('Access-Control-Allow-Headers', 'Content-Type, X-Requested-With');
         res.header('Access-Control-Expose-Headers', 'Location');
     }
+    res.header('Cache-Control', 'no-cache');
+    res.header('Connection', 'keep-alive');
+    res.header('Content-Length', '0');
     res.sendStatus(204);
 };
 
@@ -274,6 +280,7 @@ exports.create_callback = function create_callback(req, res) {
 
     res.header('Cache-Control', 'no-cache');
     res.header('Connection', 'keep-alive');
+    res.header('Content-Length', '0');
     origin = req.header('Origin');
     if (origin != null) {
         res.header('Access-Control-Allow-Origin', origin);
@@ -345,20 +352,22 @@ exports.process_callback = function process_callback(req, res) {
             console.log('Ignoring notification as the client is not connected');
         }
 
+        res.header('Content-Length', '0');
         res.sendStatus(204);
         callbacks[req.params.id].notification_counter++;
     });
 };
 
 exports.options_callback_entry = function options_callback_entry(req, res) {
-    res.header('Cache-Control', 'no-cache');
-    res.header('Connection', 'keep-alive');
     var origin = req.header('Origin');
     if (origin != null) {
         res.header('Access-Control-Allow-Origin', origin);
         res.header('Access-Control-Allow-Methods', 'DELETE, OPTIONS, POST');
         res.header('Access-Control-Allow-Headers', 'X-Requested-With');
     }
+    res.header('Cache-Control', 'no-cache');
+    res.header('Connection', 'keep-alive');
+    res.header('Content-Length', '0');
     res.sendStatus(204);
 };
 
@@ -377,5 +386,8 @@ exports.delete_callback = function delete_callback(req, res) {
     }
 
     removeCallback(req.params.id);
+    res.header('Cache-Control', 'no-cache');
+    res.header('Connection', 'keep-alive');
+    res.header('Content-Length', '0');
     res.sendStatus(204);
 };
