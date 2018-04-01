@@ -35,5 +35,15 @@
   },
   "bin": {
     "ngsi-proxy": "app.js"
+  },
+  "devDependencies": {
+    "coveralls": "^3.0.0",
+    "eventsource": "^1.0.5",
+    "istanbul": "^0.4.5",
+    "jasmine": "^3.1.0",
+    "request": "^2.85.0"
+  },
+  "scripts": {
+    "test": "./node_modules/istanbul/lib/cli.js cover -- ./node_modules/jasmine/bin/jasmine.js --config=jasmine.json"
   }
 }

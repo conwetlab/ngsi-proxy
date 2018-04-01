@@ -78,10 +78,6 @@ var removeCallback = function removeCallback(id) {
     console.log('Deleted callback with id: ' + id);
 };
 
-var removeConnection = function removeConnection(id) {
-    delete connections[id];
-    console.log('Closed connection with id: ' + id);
-};
 
 var URL = require('url');
 var build_absolute_url = function build_absolute_url(req, url) {
@@ -176,6 +172,7 @@ exports.create_eventsource = function create_eventsource(req, res) {
         res.header('Access-Control-Allow-Headers', 'X-Requested-With');
         res.header('Access-Control-Expose-Headers', 'Location');
     }
+    res.header('Content-Type', 'application/json');
     res.location(url);
     res.status(201).send(JSON.stringify({
         connection_id: connection.id,
@@ -311,10 +308,12 @@ exports.create_callback = function create_callback(req, res) {
             return;
         }
         callback_info = createCallback(connection);
+        let url = build_absolute_url(req, '/callbacks/' + callback_info.id);
         res.header('Content-Type', 'application/json');
-        res.status(200).send(JSON.stringify({
+        res.location(url);
+        res.status(201).send(JSON.stringify({
             callback_id: callback_info.id,
-            url: build_absolute_url(req, '/callbacks/' + callback_info.id)
+            url: url
         }));
     });
 };

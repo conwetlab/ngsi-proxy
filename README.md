@@ -1,5 +1,8 @@
 # ngsi-proxy
 
+[![Build Status](https://travis-ci.org/conwetlab/ngsi-proxy.svg?branch=develop)](https://travis-ci.org/conwetlab/ngsi-proxy)
+[![Coverage Status](https://coveralls.io/repos/github/conwetlab/ngsi-proxy/badge.svg?branch=develop)](https://coveralls.io/github/conwetlab/ngsi-proxy?branch=develop)
+
 The [Orion Context Broker](https://github.com/telefonicaid/fiware-orion) is a
 great piece of software for managing context information. Using the RESTful API
 provided from a web browser is easy and can also be simplified by the use of
