@@ -1,6 +1,7 @@
 # Supported tags and respective `Dockerfile` links #
 
-- [`1.0`, `latest`](https://github.com/conwetlab/ngsi-proxy/blob/1.0.x/docker/Dockerfile)
+- [`1.1`, `latest`](https://github.com/conwetlab/ngsi-proxy/blob/1.1.x/docker/Dockerfile)
+- [`1.0`](https://github.com/conwetlab/ngsi-proxy/blob/1.0.x/docker/Dockerfile)
 - [`dev`](https://github.com/conwetlab/ngsi-proxy/blob/develop/docker/Dockerfile)
 
 
