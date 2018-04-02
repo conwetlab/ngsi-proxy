@@ -224,6 +224,8 @@ exports.eventsource = function eventsource(req, res) {
             url: build_absolute_url(req, '/eventsource/' + connection.id)
         }).toString('utf8') + '\n\n');
 
+    // Force sending init event
+    res.flush();
     res.on('close', connection.close_listener);
 };
 
@@ -348,6 +350,8 @@ exports.process_callback = function process_callback(req, res) {
             }).toString('utf8');
             eventsource.write('event: notification\n');
             eventsource.write('data: ' + data + '\n\n');
+            // Send this event
+            eventsource.flush();
         } else {
             console.log('Ignoring notification as the client is not connected');
         }
