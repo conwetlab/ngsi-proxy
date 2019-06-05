@@ -1,2 +1,4 @@
 #!/bin/bash
-pm2-runtime /opt/ngsi-proxy/app.js
+
+#pm2-runtime /opt/ngsi-proxy/app.js
+node /opt/ngsi-proxy/app.js
