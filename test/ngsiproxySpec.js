@@ -94,13 +94,13 @@ describe('ngsi-proxy server', () => {
         });
     });
 
-    it('404 when trying to connect to an inexistent eventsource', (done) => {
+    it('204 when trying to connect to an inexistent eventsource', (done) => {
         request.get('http://localhost:4321/eventsource/6d3ab640-345c-11e8-aee8-4fe128ae5aa3', (error, response, body) => {
             expect(error).toBe(null);
             expect(response.headers['access-control-allow-origin']).toBe(undefined);
             expect(response.headers['access-control-allow-headers']).toBe(undefined);
             expect(response.headers['access-control-expose-headers']).toBe(undefined);
-            expect(response.statusCode).toBe(404);
+            expect(response.statusCode).toBe(204);
             done();
         });
     });
