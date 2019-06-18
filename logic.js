@@ -220,6 +220,7 @@ exports.eventsource = function eventsource(req, res) {
 
     res.header('Content-Type', 'text/event-stream');
     res.write('event: init\n');
+    res.write('retry: 10\n');
     res.write('data: ' + JSON.stringify({
             id: connection.id,
             url: build_absolute_url(req, '/eventsource/' + connection.id)
