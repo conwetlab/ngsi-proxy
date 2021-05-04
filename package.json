@@ -1,7 +1,7 @@
 {
   "name": "ngsi-proxy",
-  "version": "1.2.0",
-  "description": "Receive push notifications on web pages from FIWARE Orion servers",
+  "version": "1.2.1",
+  "description": "Receive push notifications on web pages from FIWARE NGSI context brokers",
   "repository": {
     "type": "git",
     "url": "https://github.com/conwetlab/ngsi-proxy.git"
