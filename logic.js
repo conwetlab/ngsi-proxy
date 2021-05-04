@@ -216,6 +216,7 @@ exports.eventsource = function eventsource(req, res) {
         console.log('Client closed connection with eventsource: ' + connection.id);
         connection.response = null;
         connection.client_ip = null;
+        connection.close_timestamp = new Date();
     };
 
     res.header('Content-Type', 'text/event-stream');
@@ -398,16 +399,26 @@ exports.delete_callback = function delete_callback(req, res) {
     res.sendStatus(204);
 };
 
+const RECONNECTION_TIMEOUT = 24 * 60 * 1000;
+
 exports.heartbeat = function heartbeat() {
-    console.log("Sending heartbeat messages:");
+    const now = new Date();
+
+    console.log("Checking current connections:");
     Object.values(connections).forEach((connection) => {
         const eventsource = connection.response;
 
         if (eventsource != null) {
-            console.log(`  - to eventsource ${eventsource.id}`);
+            console.log(`  - Sending heartbeat message to eventsource ${connection.id}`);
             // Send a heartbeat message
             eventsource.write('; heartbeat\n');
             eventsource.flush();
+        } else if ((now - connection.close_timestamp) > RECONNECTION_TIMEOUT) {
+            console.log(`  - Closing dead connection ${connection.id}`);
+            delete connections[connection.id];
+            for (let callback_id in connection.callbacks) {
+                delete callbacks[callback_id];
+            }
         }
     });
 };
