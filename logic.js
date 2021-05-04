@@ -399,10 +399,12 @@ exports.delete_callback = function delete_callback(req, res) {
 };
 
 exports.heartbeat = function heartbeat() {
+    console.log("Sending heartbeat messages:");
     Object.values(connections).forEach((connection) => {
         const eventsource = connection.response;
 
         if (eventsource != null) {
+            console.log(`  - to eventsource ${eventsource.id}`);
             // Send a heartbeat message
             eventsource.write('; heartbeat\n');
             eventsource.flush();
