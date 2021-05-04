@@ -1,6 +1,6 @@
 # ngsi-proxy
 
-[![Build Status](https://travis-ci.org/conwetlab/ngsi-proxy.svg?branch=develop)](https://travis-ci.org/conwetlab/ngsi-proxy)
+[![Tests](https://github.com/conwetlab/ngsi-proxy/workflows/Tests/badge.svg)](https://github.com/conwetlab/ngsi-proxy/actions?query=workflow%3A%22Tests%22)
 [![Coverage Status](https://coveralls.io/repos/github/conwetlab/ngsi-proxy/badge.svg?branch=develop)](https://coveralls.io/github/conwetlab/ngsi-proxy?branch=develop)
 
 The [Orion Context Broker](https://github.com/telefonicaid/fiware-orion) is a
