@@ -1,10 +1,7 @@
 {
   "env": {
-    "browser": true
-  },
-  "globals": {
-    "Promise": false,
-    "WeakMap": false
+    "node": true,
+    "es6": true
   },
   "rules": {
     "comma-spacing": [
@@ -34,7 +31,6 @@
     ],
     "guard-for-in": 0,
     "no-alert": 2,
-    "no-console": 2,
     "no-debugger": 2,
     "no-empty": [
       2,
@@ -121,11 +117,20 @@
     ],
     "strict": [
       "error",
-      "function"
+      "global"
     ],
     "curly": [
       2,
       "all"
+    ],
+    "prefer-const": [
+      "error"
+    ],
+    "no-var": [
+      "error"
+    ],
+    "no-const-assign": [
+      "error"
     ]
   }
 }

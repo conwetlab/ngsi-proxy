@@ -41,14 +41,15 @@
  * Module dependencies.
  */
 
-var compression = require('compression'),
+"use strict";
+
+const compression = require('compression'),
     errorhandler = require('errorhandler'),
     express = require('express'),
     logic = require('./logic'),
-    path = require('path'),
     morgan = require('morgan');
 
-var app = express();
+const app = express();
 
 // Configure Express
 app.set('port', process.env.PORT || 3000);
@@ -60,8 +61,8 @@ app.use(morgan('combined'));
 app.use(compression());
 
 // Support development mode
-var env = process.env.NODE_ENV || 'development';
-if ('development' == env) {
+const env = process.env.NODE_ENV || 'development';
+if ('development' === env) {
     app.use(errorhandler());
 }
 
@@ -82,14 +83,14 @@ if (require.main === module) {
 
     if (Number.isNaN(HEARTBEAT_INTERVAL)) {
         // Defaults to 30s
-        HEARTBEAT_INTERVAL = 30 * 000;
+        HEARTBEAT_INTERVAL = 30 * 1000;
     } else if (HEARTBEAT_INTERVAL <= 2000) {
         // Minimum interval is 2s
         HEARTBEAT_INTERVAL = 2000;
     }
     setInterval(logic.heartbeat, HEARTBEAT_INTERVAL);
 
-    app.listen(app.get('port'), function() {
+    app.listen(app.get('port'), () => {
         console.log("ngsi-proxy server listening on port " + app.get('port'));
     });
 } else {

@@ -36,6 +36,8 @@
  *
  */
 
+"use strict";
+
 const uuid = require('uuid/v1');
 
 let RECONNECTION_TIMEOUT = Number(process.env.RECONNECTION_TIMEOUT);
@@ -47,12 +49,12 @@ if (Number.isNaN(RECONNECTION_TIMEOUT)) {
     RECONNECTION_TIMEOUT = 30000;
 }
 
-var connections = {};
-var callbacks = {};
+const connections = {};
+const callbacks = {};
 
-createConnection = function createConnection() {
-    var id = uuid();
-    var connection = {
+const createConnection = function createConnection() {
+    const id = uuid();
+    const connection = {
         id: id,
         client_ip: null,
         close_timestamp: null,
@@ -66,9 +68,9 @@ createConnection = function createConnection() {
     return connection;
 };
 
-var createCallback = function createCallback(connection) {
-    var id = uuid();
-    callback_info = callbacks[id] = connection.callbacks[id] = {
+const createCallback = function createCallback(connection) {
+    const id = uuid();
+    const callback_info = callbacks[id] = connection.callbacks[id] = {
         id: id,
         connection: connection,
         notification_counter: 0
@@ -78,8 +80,8 @@ var createCallback = function createCallback(connection) {
     return callback_info;
 };
 
-var removeCallback = function removeCallback(id) {
-    var callback_info = callbacks[id];
+const removeCallback = function removeCallback(id) {
+    const callback_info = callbacks[id];
 
     delete callback_info.connection.callbacks[id];
     delete callbacks[id];
@@ -89,14 +91,14 @@ var removeCallback = function removeCallback(id) {
 };
 
 
-var URL = require('url');
-var build_absolute_url = function build_absolute_url(req, url) {
-    let protocol = req.protocol;
-    let domain = req.hostname;
-    let path = req.url;
-    let port = (process.env.TRUST_PROXY_HEADERS && req.get('X-Forwarded-Port')) || req.socket.localPort;
+const URL = require('url');
+const build_absolute_url = function build_absolute_url(req, url) {
+    const protocol = req.protocol;
+    const domain = req.hostname;
+    const path = req.url;
+    const port = (process.env.TRUST_PROXY_HEADERS && req.get('X-Forwarded-Port')) || req.socket.localPort;
 
-    if (protocol === "http" && port != 80 || protocol === "https" && port != 443) {
+    if (protocol === "http" && port !== 80 || protocol === "https" && port !== 443) {
         return URL.resolve(protocol + "://" + domain + ':' + port + path, url);
     } else {
         return URL.resolve(protocol + "://" + domain + path, url);
@@ -104,7 +106,7 @@ var build_absolute_url = function build_absolute_url(req, url) {
 };
 
 exports.options_eventsource = function options_eventsource(req, res) {
-    var origin = req.header('Origin');
+    const origin = req.header('Origin');
     if (origin != null) {
         res.header('Access-Control-Allow-Origin', origin);
         res.header('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -117,7 +119,7 @@ exports.options_eventsource = function options_eventsource(req, res) {
 };
 
 exports.options_eventsource_entry = function options_eventsource_entry(req, res) {
-    var origin = req.header('Origin');
+    const origin = req.header('Origin');
     if (origin != null) {
         res.header('Access-Control-Allow-Origin', origin);
         res.header('Access-Control-Allow-Methods', 'GET, DELETE');
@@ -130,12 +132,12 @@ exports.options_eventsource_entry = function options_eventsource_entry(req, res)
 
 exports.list_eventsources = function list_eventsources(req, res) {
     res.writeHead(200, {'Content-Type': 'application/xhtml+xml; charset=UTF-8'});
-    var content = '<!DOCTYPE html>\n<html xmlns="http://www.w3.org/1999/xhtml"><head></head><body>';
+    let content = '<!DOCTYPE html>\n<html xmlns="http://www.w3.org/1999/xhtml"><head></head><body>';
     content += '<h1>Current connections</h1>'
     if (Object.keys(connections).length > 0) {
         content += '<ul>';
-        for (var connection_id in connections) {
-            var connection = connections[connection_id];
+        for (const connection_id in connections) {
+            const connection = connections[connection_id];
             content += '<li><b>' + connection_id + '</b>. ';
 
             content += 'The client has started the connection ' + connection.reconnection_count + ' times and is currently '
@@ -145,13 +147,13 @@ exports.list_eventsources = function list_eventsources(req, res) {
                 content += ' not connected. ';
             }
 
-            var callback_count = Object.keys(connection.callbacks).length;
+            const callback_count = Object.keys(connection.callbacks).length;
 
-            if (callback_count > 0 ) {
+            if (callback_count > 0) {
                 content += callback_count + ' callbacks:';
 
                 content += '<ul>';
-                for (var callback_id in connection.callbacks) {
+                for (const callback_id in connection.callbacks) {
                     content += '<li><b>' + callback_id + '</b> (' + connection.callbacks[callback_id].notification_counter + ' received notifications)</li>';
                 }
                 content += '</ul>';
@@ -172,10 +174,10 @@ exports.list_eventsources = function list_eventsources(req, res) {
 
 exports.create_eventsource = function create_eventsource(req, res) {
 
-    var origin = req.header('Origin');
-    connection = createConnection(origin);
+    const origin = req.header('Origin');
+    const connection = createConnection(origin);
 
-    url = build_absolute_url(req, '/eventsource/' + connection.id);
+    const url = build_absolute_url(req, '/eventsource/' + connection.id);
 
     res.header('Cache-Control', 'no-cache');
     res.header('Connection', 'keep-alive');
@@ -193,9 +195,9 @@ exports.create_eventsource = function create_eventsource(req, res) {
 };
 
 exports.eventsource = function eventsource(req, res) {
-    var origin, connection = connections[req.params.id];
+    const connection = connections[req.params.id];
+    const origin = req.header('Origin');
 
-    origin = req.header('Origin');
     if (origin != null) {
         res.header('Access-Control-Allow-Origin', origin);
     }
@@ -233,9 +235,9 @@ exports.eventsource = function eventsource(req, res) {
     res.write('event: init\n');
     res.write('retry: 10\n');
     res.write('data: ' + JSON.stringify({
-            id: connection.id,
-            url: build_absolute_url(req, '/eventsource/' + connection.id)
-        }).toString('utf8') + '\n\n');
+        id: connection.id,
+        url: build_absolute_url(req, '/eventsource/' + connection.id)
+    }).toString('utf8') + '\n\n');
 
     // Force sending init event
     res.flush();
@@ -243,9 +245,9 @@ exports.eventsource = function eventsource(req, res) {
 };
 
 exports.delete_eventsource = function delete_eventsource(req, res) {
-    var origin, connection = connections[req.params.id];
+    const connection = connections[req.params.id];
+    const origin = req.header('Origin');
 
-    origin = req.header('Origin');
     if (origin != null) {
         res.header('Access-Control-Allow-Origin', origin);
         res.header('Access-Control-Allow-Headers', 'X-Requested-With');
@@ -267,7 +269,7 @@ exports.delete_eventsource = function delete_eventsource(req, res) {
         } catch (e) {}
     }
 
-    for (var callback_id in connection.callbacks) {
+    for (const callback_id in connection.callbacks) {
         console.log('Deleting callback ' + callback_id);
         delete callbacks[callback_id];
     }
@@ -277,7 +279,7 @@ exports.delete_eventsource = function delete_eventsource(req, res) {
 };
 
 exports.options_callbacks = function options_callbacks(req, res) {
-    var origin = req.header('Origin');
+    const origin = req.header('Origin');
     if (origin != null) {
         res.header('Access-Control-Allow-Origin', origin);
         res.header('Access-Control-Allow-Methods', 'OPTIONS, POST');
@@ -291,24 +293,21 @@ exports.options_callbacks = function options_callbacks(req, res) {
 };
 
 exports.create_callback = function create_callback(req, res) {
-    var origin, buf;
-
     res.header('Cache-Control', 'no-cache');
     res.header('Connection', 'keep-alive');
     res.header('Content-Length', '0');
-    origin = req.header('Origin');
+
+    const origin = req.header('Origin');
     if (origin != null) {
         res.header('Access-Control-Allow-Origin', origin);
         res.header('Access-Control-Allow-Headers', 'Content-Type, X-Requested-With');
         res.header('Access-Control-Expose-Headers', 'Location');
     }
 
-    buf = '';
+    let buf = '';
     req.setEncoding('utf8');
     req.on('data', function (chunck) { buf += chunck; });
     req.on('end', function () {
-        var data, connection, callback_info;
-
         buf = buf.trim();
 
         if (buf.length === 0) {
@@ -316,6 +315,7 @@ exports.create_callback = function create_callback(req, res) {
             return;
         }
 
+        let data;
         try {
             data = JSON.parse(buf);
         } catch (e) {
@@ -323,14 +323,14 @@ exports.create_callback = function create_callback(req, res) {
             return;
         }
 
-        connection = connections[data.connection_id];
+        const connection = connections[data.connection_id];
 
         if (connection == null) {
             res.sendStatus(404);
             return;
         }
-        callback_info = createCallback(connection);
-        let url = build_absolute_url(req, '/callbacks/' + callback_info.id);
+        const callback_info = createCallback(connection);
+        const url = build_absolute_url(req, '/callbacks/' + callback_info.id);
         res.header('Content-Type', 'application/json');
         res.location(url);
         res.status(201).send(JSON.stringify({
@@ -348,15 +348,15 @@ exports.process_callback = function process_callback(req, res) {
     }
 
     console.log('Processing callback ' + req.params.id);
-    var connection = callbacks[req.params.id].connection;
+    const connection = callbacks[req.params.id].connection;
 
-    buf = '';
+    let buf = '';
     req.on('data', function (chunck) { buf += chunck; });
     req.on('end', function () {
-        var eventsource = connection.response;
+        const eventsource = connection.response;
 
         if (eventsource != null) {
-            var data = JSON.stringify({
+            const data = JSON.stringify({
                 callback_id: req.params.id,
                 payload: buf,
                 headers: req.headers
@@ -376,7 +376,7 @@ exports.process_callback = function process_callback(req, res) {
 };
 
 exports.options_callback_entry = function options_callback_entry(req, res) {
-    var origin = req.header('Origin');
+    const origin = req.header('Origin');
     if (origin != null) {
         res.header('Access-Control-Allow-Origin', origin);
         res.header('Access-Control-Allow-Methods', 'DELETE, OPTIONS, POST');
@@ -391,7 +391,7 @@ exports.options_callback_entry = function options_callback_entry(req, res) {
 exports.delete_callback = function delete_callback(req, res) {
     console.log('Deleting callback ' + req.params.id);
 
-    var origin = req.header('Origin');
+    const origin = req.header('Origin');
     if (origin != null) {
         res.header('Access-Control-Allow-Origin', origin);
         res.header('Access-Control-Allow-Headers', 'X-Requested-With');
@@ -424,7 +424,7 @@ exports.heartbeat = function heartbeat() {
         } else if ((now - connection.close_timestamp) > RECONNECTION_TIMEOUT) {
             console.log(`  - Closing dead connection ${connection.id}`);
             delete connections[connection.id];
-            for (let callback_id in connection.callbacks) {
+            for (const callback_id in connection.callbacks) {
                 delete callbacks[callback_id];
             }
         }
