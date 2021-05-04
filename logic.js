@@ -1,6 +1,6 @@
 /*
  *     Copyright (c) 2014-2017 CoNWeT Lab., Universidad Politécnica de Madrid
- *     Copyright (c) 2018 Future Internet Consulting and Development Solutions S.L.
+ *     Copyright (c) 2018-2021 Future Internet Consulting and Development Solutions S.L.
  *
  *     This file is part of ngsi-proxy.
  *
@@ -38,14 +38,24 @@
 
 const uuid = require('uuid/v1');
 
+let RECONNECTION_TIMEOUT = Number(process.env.RECONNECTION_TIMEOUT);
+if (Number.isNaN(RECONNECTION_TIMEOUT)) {
+    // Default value: 24h
+    RECONNECTION_TIMEOUT = 24 * 60 * 1000;
+} else if (RECONNECTION_TIMEOUT < 30000) {
+    // Minimun value: 30s
+    RECONNECTION_TIMEOUT = 30000;
+}
+
 var connections = {};
 var callbacks = {};
 
-var createConnection = function createConnection() {
+createConnection = function createConnection() {
     var id = uuid();
     var connection = {
         id: id,
         client_ip: null,
+        close_timestamp: null,
         reconnection_count: 0,
         response: null,
         callbacks: {}
@@ -216,6 +226,7 @@ exports.eventsource = function eventsource(req, res) {
         console.log('Client closed connection with eventsource: ' + connection.id);
         connection.response = null;
         connection.client_ip = null;
+        connection.close_timestamp = new Date();
     };
 
     res.header('Content-Type', 'text/event-stream');
@@ -397,3 +408,27 @@ exports.delete_callback = function delete_callback(req, res) {
     res.header('Content-Length', '0');
     res.sendStatus(204);
 };
+
+exports.heartbeat = function heartbeat() {
+    const now = new Date();
+
+    console.log("Checking current connections:");
+    Object.values(connections).forEach((connection) => {
+        const eventsource = connection.response;
+
+        if (eventsource != null) {
+            console.log(`  - Sending heartbeat message to eventsource ${connection.id}`);
+            // Send a heartbeat message
+            eventsource.write('; heartbeat\n');
+            eventsource.flush();
+        } else if ((now - connection.close_timestamp) > RECONNECTION_TIMEOUT) {
+            console.log(`  - Closing dead connection ${connection.id}`);
+            delete connections[connection.id];
+            for (let callback_id in connection.callbacks) {
+                delete callbacks[callback_id];
+            }
+        }
+    });
+};
+
+exports.createConnection = createConnection;

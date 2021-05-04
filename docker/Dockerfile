@@ -1,5 +1,4 @@
-
-ARG NODE_VERSION=8.15.0-slim
+ARG NODE_VERSION=16-slim
 FROM node:${NODE_VERSION}
 ARG GITHUB_ACCOUNT=conwetlab
 ARG GITHUB_REPOSITORY=ngsi-proxy
@@ -23,48 +22,46 @@ ENV DOWNLOAD=${DOWNLOAD}
 # COPY . /opt/ngsi-proxy
 #
 RUN if [ "${DOWNLOAD}" = "latest" ] ; \
-	then \
-		RELEASE="${SOURCE_BRANCH}"; \
-		echo "INFO: Building Latest Development from ${SOURCE_BRANCH} branch."; \
-	elif [ "${DOWNLOAD}" = "stable" ]; \
-	then \
-		RELEASE=$(curl -s https://api.github.com/repos/"${GITHUB_ACCOUNT}"/"${GITHUB_REPOSITORY}"/releases/latest | grep 'tag_name' | cut -d\" -f4); \
-		echo "INFO: Building Latest Stable Release: ${RELEASE}"; \
-	else \
-	 	RELEASE="${DOWNLOAD}"; \
-	 	echo "INFO: Building Release: ${RELEASE}"; \
-	fi && \
-	RELEASE_CONCAT=$(echo "${RELEASE}" | tr / -); \
-	# Ensure that unzip is installed, and download the sources
-	apt-get update && \
-	apt-get install -y  --no-install-recommends unzip && \
-	wget --no-check-certificate -O source.zip https://github.com/"${GITHUB_ACCOUNT}"/"${GITHUB_REPOSITORY}"/archive/"${RELEASE}".zip && \
-	unzip source.zip && \
-	rm source.zip && \
-	mv "${GITHUB_REPOSITORY}-${RELEASE_CONCAT}" /opt/ngsi-proxy && \
-	# Remove unzip and clean apt cache
-	apt-get clean && \
-	apt-get remove -y unzip && \
-	apt-get -y autoremove
+    then \
+        RELEASE="${SOURCE_BRANCH}"; \
+        echo "INFO: Building Latest Development from ${SOURCE_BRANCH} branch."; \
+    elif [ "${DOWNLOAD}" = "stable" ]; \
+    then \
+        RELEASE=$(curl -s https://api.github.com/repos/"${GITHUB_ACCOUNT}"/"${GITHUB_REPOSITORY}"/releases/latest | grep 'tag_name' | cut -d\" -f4); \
+        echo "INFO: Building Latest Stable Release: ${RELEASE}"; \
+    else \
+        RELEASE="${DOWNLOAD}"; \
+        echo "INFO: Building Release: ${RELEASE}"; \
+    fi && \
+    RELEASE_CONCAT=$(echo "${RELEASE}" | tr / -); \
+    # Ensure that unzip and wget are installed, and download the sources
+    apt update && \
+    apt install -y  --no-install-recommends unzip wget && \
+    wget --no-check-certificate -O source.zip https://github.com/"${GITHUB_ACCOUNT}"/"${GITHUB_REPOSITORY}"/archive/"${RELEASE}".zip && \
+    unzip source.zip && \
+    rm source.zip && \
+    mv "${GITHUB_REPOSITORY}-${RELEASE_CONCAT}" /opt/ngsi-proxy && \
+    # Remove unzip and wget, and clean apt cache
+    apt clean && \
+    apt remove -y unzip wget && \
+    apt -y autoremove
 
 WORKDIR /opt/ngsi-proxy
 
 RUN \
-	# Ensure that Git is installed prior to running npm install
-	apt-get update && \
-	apt-get install -y git && \
-	echo "INFO: npm install --production..." && \
-	npm install --production && \
-	# Remove Git and clean apt cache
-	apt-get clean && \
-	apt-get remove -y git && \
-	apt-get -y autoremove && \
-	chmod +x docker/entrypoint.sh
+    # Ensure that Git is installed prior to running npm install
+    apt update && \
+    apt install -y git && \
+    echo "INFO: npm install --production..." && \
+    npm install --production && \
+    # Remove Git and clean apt cache
+    apt clean && \
+    apt remove -y git && \
+    apt -y autoremove && \
+    chmod +x docker/entrypoint.sh && \
+    rm -rf /var/lib/apt/lists/*
 
 USER node
 ENV NODE_ENV=production
-
-# Expose 3000 for Proxy Port
-EXPOSE ${PORT:-3000}
 
 ENTRYPOINT ["docker/entrypoint.sh"]
