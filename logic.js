@@ -38,14 +38,24 @@
 
 const uuid = require('uuid/v1');
 
+let RECONNECTION_TIMEOUT = Number(process.env.RECONNECTION_TIMEOUT);
+if (Number.isNaN(RECONNECTION_TIMEOUT)) {
+    // Default value: 24h
+    RECONNECTION_TIMEOUT = 24 * 60 * 1000;
+} else if (RECONNECTION_TIMEOUT < 30000) {
+    // Minimun value: 30s
+    RECONNECTION_TIMEOUT = 30000;
+}
+
 var connections = {};
 var callbacks = {};
 
-var createConnection = function createConnection() {
+createConnection = function createConnection() {
     var id = uuid();
     var connection = {
         id: id,
         client_ip: null,
+        close_timestamp: null,
         reconnection_count: 0,
         response: null,
         callbacks: {}
@@ -399,8 +409,6 @@ exports.delete_callback = function delete_callback(req, res) {
     res.sendStatus(204);
 };
 
-const RECONNECTION_TIMEOUT = 24 * 60 * 1000;
-
 exports.heartbeat = function heartbeat() {
     const now = new Date();
 
@@ -422,3 +430,5 @@ exports.heartbeat = function heartbeat() {
         }
     });
 };
+
+exports.createConnection = createConnection;

@@ -78,7 +78,17 @@ app.options('/callbacks/:id', logic.options_callback_entry);
 app.delete('/callbacks/:id', logic.delete_callback);
 
 if (require.main === module) {
-    setInterval(logic.heartbeat, 2.5 * 60 * 1000);
+    let HEARTBEAT_INTERVAL = Number(process.env.HEARTBEAT_INTERVAL);
+
+    if (Number.isNaN(HEARTBEAT_INTERVAL)) {
+        // Defaults to 30s
+        HEARTBEAT_INTERVAL = 30 * 000;
+    } else if (HEARTBEAT_INTERVAL <= 2000) {
+        // Minimum interval is 2s
+        HEARTBEAT_INTERVAL = 2000;
+    }
+    setInterval(logic.heartbeat, HEARTBEAT_INTERVAL);
+
     app.listen(app.get('port'), function() {
         console.log("ngsi-proxy server listening on port " + app.get('port'));
     });
