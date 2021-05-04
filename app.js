@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /*
  *     Copyright (c) 2013-2017 CoNWeT Lab - Universidad Politécnica de Madrid
+ *     Copyright (c) 2018-2021 Future Internet Consulting and Development Solutions S.L.
  *
  *     This file is part of ngsi-proxy.
  *
@@ -77,6 +78,7 @@ app.options('/callbacks/:id', logic.options_callback_entry);
 app.delete('/callbacks/:id', logic.delete_callback);
 
 if (require.main === module) {
+    setInterval(logic.heartbeat, 2.5 * 60 * 1000);
     app.listen(app.get('port'), function() {
         console.log("ngsi-proxy server listening on port " + app.get('port'));
     });

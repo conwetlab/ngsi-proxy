@@ -1,6 +1,6 @@
 /*
  *     Copyright (c) 2014-2017 CoNWeT Lab., Universidad Politécnica de Madrid
- *     Copyright (c) 2018 Future Internet Consulting and Development Solutions S.L.
+ *     Copyright (c) 2018-2021 Future Internet Consulting and Development Solutions S.L.
  *
  *     This file is part of ngsi-proxy.
  *
@@ -396,4 +396,16 @@ exports.delete_callback = function delete_callback(req, res) {
     res.header('Connection', 'keep-alive');
     res.header('Content-Length', '0');
     res.sendStatus(204);
+};
+
+exports.heartbeat = function heartbeat() {
+    Object.values(connections).forEach((connection) => {
+        const eventsource = connection.response;
+
+        if (eventsource != null) {
+            // Send a heartbeat message
+            eventsource.write('; heartbeat\n');
+            eventsource.flush();
+        }
+    });
 };
