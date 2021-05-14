@@ -1,0 +1,15 @@
+coverage/
+docker/
+build/
+dist/
+helpers/
+jsdoctemplate/
+ngsi-proxy/
+notifications/
+responses/
+test/
+.*
+*.tgz
+Gruntfile.js
+jasmine.json
+tests.js
