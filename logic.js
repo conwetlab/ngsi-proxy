@@ -42,11 +42,11 @@ const uuid = require('uuid/v1');
 
 let RECONNECTION_TIMEOUT = Number(process.env.RECONNECTION_TIMEOUT);
 if (Number.isNaN(RECONNECTION_TIMEOUT)) {
-    // Default value: 24h
-    RECONNECTION_TIMEOUT = 24 * 60 * 1000;
-} else if (RECONNECTION_TIMEOUT < 30000) {
-    // Minimun value: 30s
+    // Default value: 30s
     RECONNECTION_TIMEOUT = 30000;
+} else if (RECONNECTION_TIMEOUT < 5000) {
+    // Minimun value: 5s
+    RECONNECTION_TIMEOUT = 5000;
 }
 
 const connections = {};
@@ -306,7 +306,7 @@ exports.create_callback = function create_callback(req, res) {
 
     let buf = '';
     req.setEncoding('utf8');
-    req.on('data', function (chunck) { buf += chunck; });
+    req.on('data', function (chunk) { buf += chunk; });
     req.on('end', function () {
         buf = buf.trim();
 
